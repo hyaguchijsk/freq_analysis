@@ -15,6 +15,36 @@ GaborFilter::GaborFilter(float freq, float sigma) :
   init_table_();
 }
 
+GaborFilter::GaborFilter(const GaborFilter& obj) {
+  freq_ = obj.freq_;
+  sigma_ = obj.sigma_;
+  window_width_ = obj.window_width_;
+
+  time_step_ = obj.time_step_;
+  table_size_ = obj.table_size_;
+
+  gabor_table_r_.assign(obj.gabor_table_r_.begin(),
+                        obj.gabor_table_r_.end());
+  gabor_table_i_.assign(obj.gabor_table_i_.begin(),
+                        obj.gabor_table_i_.end());
+}
+
+GaborFilter& GaborFilter::operator=(const GaborFilter& obj) {
+  freq_ = obj.freq_;
+  sigma_ = obj.sigma_;
+  window_width_ = obj.window_width_;
+
+  time_step_ = obj.time_step_;
+  table_size_ = obj.table_size_;
+
+  gabor_table_r_.assign(obj.gabor_table_r_.begin(),
+                        obj.gabor_table_r_.end());
+  gabor_table_i_.assign(obj.gabor_table_i_.begin(),
+                        obj.gabor_table_i_.end());
+  
+  return *this;
+}
+
 void GaborFilter::init_table_() {
   window_width_ = (1.0 / freq_) * sigma_ * sqrt(-2.0 * log(0.01));
   table_size_ = static_cast<uint32_t>(window_width_ / time_step_);

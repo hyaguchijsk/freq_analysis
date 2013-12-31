@@ -7,6 +7,8 @@
 #include <string>
 #include <list>
 
+#include <boost/shared_ptr.hpp>
+
 namespace freq_analysis {
 
 class GaborFilter {
@@ -20,6 +22,9 @@ public:
   std::pair<float, float> approx_value(float time);
   
   void status();
+
+  GaborFilter(const GaborFilter& obj);
+  GaborFilter& operator=(const GaborFilter& obj);
   
 private:
   float freq_;
@@ -33,6 +38,8 @@ private:
 
   void init_table_();
 };
+
+typedef boost::shared_ptr<GaborFilter> GaborFilterPtr;
 
 }  // namespace
 
