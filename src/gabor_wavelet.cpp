@@ -12,11 +12,17 @@
 #include <math.h>
 
 namespace freq_analysis {
+/// @brief Constructor
+/// @param freq Frequency [Hz]
+/// @param sigma Sigma: variation of gaussian distribution
+/// @param time_step Time step of value table [s]
 GaborFilter::GaborFilter(float freq, float sigma, float time_step) :
     freq_(freq), sigma_(sigma), time_step_(time_step) {
   InitTable_();
 }
 
+/// @brief Copy constructor
+/// @param obj Original instance
 GaborFilter::GaborFilter(const GaborFilter& obj) {
   freq_ = obj.freq_;
   sigma_ = obj.sigma_;
@@ -31,6 +37,8 @@ GaborFilter::GaborFilter(const GaborFilter& obj) {
                         obj.gabor_table_i_.end());
 }
 
+/// @brief operator =
+/// @param obj Original instance
 GaborFilter& GaborFilter::operator=(const GaborFilter& obj) {
   freq_ = obj.freq_;
   sigma_ = obj.sigma_;
@@ -47,6 +55,7 @@ GaborFilter& GaborFilter::operator=(const GaborFilter& obj) {
   return *this;
 }
 
+/// @brief Initialize value table, call at once from constructor
 void GaborFilter::InitTable_() {
   window_width_ = (1.0 / freq_) * sigma_ * sqrt(-2.0 * log(0.01));
   table_size_ = static_cast<uint32_t>(window_width_ / time_step_);
@@ -66,6 +75,9 @@ void GaborFilter::InitTable_() {
   }
 }
 
+/// @brief Approximate value of Gabor wavelet
+/// @return Complex number as std::pair
+/// @param time Time[s]
 std::pair<float, float> GaborFilter::ApproxValue(float time) {
   int32_t idx = static_cast<int32_t>(time / time_step_
                                      + static_cast<float>(table_size_));
@@ -86,7 +98,10 @@ std::pair<float, float> GaborFilter::ApproxValue(float time) {
 }
 
 
-
+/// @brief Filter time-seriesed values using gabor filter
+/// @param time_list Time at for each values
+/// @param value_list Values
+/// @param time_offset Time offset[s] > 0.0, center of Gabor wavelet = -time_offset
 float GaborFilter::Filter(const std::list<float> time_list,
                           const std::list<float> value_list,
                           float time_offset) {
@@ -116,6 +131,7 @@ float GaborFilter::Filter(const std::list<float> time_list,
   return result;
 }
 
+/// @brief Show params of GaborFilter
 void GaborFilter::Status() {
   std::cout << "freq: " << freq_ << std::endl;
   std::cout << "sigma: " << sigma_ << std::endl;
