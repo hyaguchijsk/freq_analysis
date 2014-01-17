@@ -10,7 +10,7 @@ namespace freq_analysis {
 GaborFilter::GaborFilter(float freq, float sigma) :
     freq_(freq), sigma_(sigma) {
 
-  time_step_ = 0.01;  // 100hz
+  time_step_ = 0.005;  // 200hz
 
   init_table_();
 }
@@ -91,15 +91,27 @@ float GaborFilter::filter(const std::list<float> time_list,
   std::list<float>::const_iterator time_iter = time_list.begin();
   std::list<float>::const_iterator value_iter = value_list.begin();
 
+  float result = 0.0;
+  float res_re = 0.0;
+  float res_im = 0.0;
+  
   while (time_iter != time_list.end() && value_iter != value_list.end()) {
     float time = *time_iter - time_offset;
     float value = *value_iter;
+
+    std::pair<float, float> gabor_value = approx_value(time);
+    float re = gabor_value.first * value;
+    float im = gabor_value.second * value;
+
+    res_re += re;
+    res_im += im;
     
     time_iter++;
     value_iter++;
   }
-  
-  return 0.0;
+
+  result = sqrt(freq_) * sqrt (res_re * res_re + res_im * res_im);
+  return result;
 }
 
 void GaborFilter::status() {

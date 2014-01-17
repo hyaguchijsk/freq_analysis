@@ -11,3 +11,6 @@ add_library(gabor_wavelet src/gabor_wavelet.cpp)
 
 add_executable(test_gabor test/test_gabor.cpp)
 target_link_libraries(test_gabor gabor_wavelet)
+
+add_executable(test_filter test/test_filter.cpp)
+target_link_libraries(test_filter gabor_wavelet)
