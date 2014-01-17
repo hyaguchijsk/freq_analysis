@@ -1,3 +1,8 @@
+/// @file test_filter.cpp
+/// @brief Test for GaborWavelet.Filter()
+/// @author Hiroaki Yaguchi
+/// @author Copyright (c) 2014 Hiroaki Yaguchi, JSK, The University of Tokyo
+
 #include <iostream>
 #include <stdint.h>
 #include <vector>
@@ -11,10 +16,13 @@
 using freq_analysis::GaborFilter;
 
 int main(int argc, char** argv) {
-  GaborFilter gabor(20.0, 1.0);
+  // Create filter with; freq = 20.0[Hz], sigma - 1.0, timestep = 0.005[s].
+  GaborFilter gabor(20.0, 1.0, 0.005);
 
-  // gabor.status();
+  // Show status
+  // gabor.Status();
 
+  // Filter sin waves with various freqency
   for (float freq = 5.0; freq <= 80.0; freq *= 2.0) {
     std::list<float> time_list;
     std::list<float> value_list;
@@ -27,7 +35,8 @@ int main(int argc, char** argv) {
       value_list.push_back(sin(omega * t));
     }
 
-    result = gabor.filter(time_list, value_list, 0.0);
+    // Filter using GaborFilter.Filter()
+    result = gabor.Filter(time_list, value_list, 0.0);
     std::cout << "freq: " << freq << " , value = " << result << std::endl;  
     }
   

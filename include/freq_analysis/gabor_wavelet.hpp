@@ -1,3 +1,8 @@
+/// @file gabor_wavelet.hpp
+/// @brief Gabor wavelet filter
+/// @author Hiroaki Yaguchi
+/// @author Copyright (c) 2014 Hiroaki Yaguchi, JSK, The University of Tokyo
+
 #ifndef FREQ_ANALYSIS_GABOR_FILTER_HPP_
 #define FREQ_ANALYSIS_GABOR_FILTER_HPP_
 
@@ -13,15 +18,15 @@ namespace freq_analysis {
 
 class GaborFilter {
 public:
-  GaborFilter(float freq, float sigma);
+  GaborFilter(float freq, float sigma, float time_step);
 
-  float filter(const std::list<float> time_list,
+  float Filter(const std::list<float> time_list,
                const std::list<float> value_list,
                float time_offset);
 
-  std::pair<float, float> approx_value(float time);
+  std::pair<float, float> ApproxValue(float time);
   
-  void status();
+  void Status();
 
   GaborFilter(const GaborFilter& obj);
   GaborFilter& operator=(const GaborFilter& obj);
@@ -36,7 +41,7 @@ private:
   std::vector<float> gabor_table_r_;
   std::vector<float> gabor_table_i_;
 
-  void init_table_();
+  void InitTable_();
 };
 
 typedef boost::shared_ptr<GaborFilter> GaborFilterPtr;

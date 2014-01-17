@@ -1,3 +1,8 @@
+/// @file gabor_wavelet.cpp
+/// @brief Gabor wavelet filter
+/// @author Hiroaki Yaguchi
+/// @author Copyright (c) 2014 Hiroaki Yaguchi, JSK, The University of Tokyo
+
 #include "freq_analysis/gabor_wavelet.hpp"
 
 #include <iostream>
@@ -7,12 +12,9 @@
 #include <math.h>
 
 namespace freq_analysis {
-GaborFilter::GaborFilter(float freq, float sigma) :
-    freq_(freq), sigma_(sigma) {
-
-  time_step_ = 0.005;  // 200hz
-
-  init_table_();
+GaborFilter::GaborFilter(float freq, float sigma, float time_step) :
+    freq_(freq), sigma_(sigma), time_step_(time_step) {
+  InitTable_();
 }
 
 GaborFilter::GaborFilter(const GaborFilter& obj) {
@@ -45,7 +47,7 @@ GaborFilter& GaborFilter::operator=(const GaborFilter& obj) {
   return *this;
 }
 
-void GaborFilter::init_table_() {
+void GaborFilter::InitTable_() {
   window_width_ = (1.0 / freq_) * sigma_ * sqrt(-2.0 * log(0.01));
   table_size_ = static_cast<uint32_t>(window_width_ / time_step_);
 
@@ -64,7 +66,7 @@ void GaborFilter::init_table_() {
   }
 }
 
-std::pair<float, float> GaborFilter::approx_value(float time) {
+std::pair<float, float> GaborFilter::ApproxValue(float time) {
   int32_t idx = static_cast<int32_t>(time / time_step_
                                      + static_cast<float>(table_size_));
   float a = (time / time_step_ + static_cast<float>(table_size_))
@@ -85,7 +87,7 @@ std::pair<float, float> GaborFilter::approx_value(float time) {
 
 
 
-float GaborFilter::filter(const std::list<float> time_list,
+float GaborFilter::Filter(const std::list<float> time_list,
                           const std::list<float> value_list,
                           float time_offset) {
   std::list<float>::const_iterator time_iter = time_list.begin();
@@ -99,7 +101,7 @@ float GaborFilter::filter(const std::list<float> time_list,
     float time = *time_iter - time_offset;
     float value = *value_iter;
 
-    std::pair<float, float> gabor_value = approx_value(time);
+    std::pair<float, float> gabor_value = ApproxValue(time);
     float re = gabor_value.first * value;
     float im = gabor_value.second * value;
 
@@ -114,7 +116,7 @@ float GaborFilter::filter(const std::list<float> time_list,
   return result;
 }
 
-void GaborFilter::status() {
+void GaborFilter::Status() {
   std::cout << "freq: " << freq_ << std::endl;
   std::cout << "sigma: " << sigma_ << std::endl;
   std::cout << "window width: " << window_width_ << std::endl;
