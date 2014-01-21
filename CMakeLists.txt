@@ -16,3 +16,6 @@ add_executable(test_gabor_filter test/test_gabor_filter.cpp include/gtest/gtest-
 target_link_libraries(test_gabor_filter gabor_wavelet pthread)
 add_executable(test_wavelet_converter test/test_wavelet_converter.cpp include/gtest/gtest-all.cc include/gtest/gtest_main.cc)
 target_link_libraries(test_wavelet_converter wavelet_converter pthread)
+
+add_executable(sample_walking example/sample_walking.cpp)
+target_link_libraries(sample_walking wavelet_converter)

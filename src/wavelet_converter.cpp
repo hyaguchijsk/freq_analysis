@@ -18,11 +18,13 @@ namespace freq_analysis {
 /// @param max_buf_length Max size of buffer
 /// @param center_t Offset to center of gaussian[s] > 0.0
 WaveletConverter::WaveletConverter(float start, float step, size_t length,
-                                   size_t max_buf_length, float center_t) :
+                                   size_t max_buf_length, float center_t,
+                                   float sigma) :
     max_buf_length_(max_buf_length), center_t_(center_t) {
   float freq = start;
   for (size_t i = 0; i < length; i++) {
-    GaborFilterPtr gabor(new GaborFilter(freq, 2.0, 0.005));
+    float time_step = 1.0 / freq / 8.0;
+    GaborFilterPtr gabor(new GaborFilter(freq, sigma, time_step));
     filter_list_.push_back(gabor);
     freq_list_.push_back(freq);
     freq *= step;
