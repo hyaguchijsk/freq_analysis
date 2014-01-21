@@ -10,6 +10,8 @@
 #include <vector>
 #include <string>
 
+#include <boost/shared_ptr.hpp>
+
 #include "freq_analysis/gabor_wavelet.hpp"
 
 namespace freq_analysis {
@@ -17,13 +19,14 @@ namespace freq_analysis {
 class WaveletConverter {
  public:
   WaveletConverter(float start, float step, size_t length,
-                   size_t max_buf_length, float center_t);
+                   size_t max_buf_length, float center_t,
+                   float sigma = 2.0);
 
   void AddValue(float time, float value);
   void ClearValue();
   void Convert(std::vector<float>& result);
   void Frequencies(std::vector<float>& result);
-  
+
  private:
   std::vector<GaborFilterPtr> filter_list_;
   std::vector<float> freq_list_;
@@ -33,6 +36,8 @@ class WaveletConverter {
   size_t max_buf_length_;
   float center_t_;
 };
+
+typedef boost::shared_ptr<WaveletConverter> WaveletConverterPtr;
 
 }  // namespace
 
