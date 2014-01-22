@@ -71,8 +71,17 @@ class SampleDataReader {
       end = time_list_[time_list_.size()-1];
     }
 
+    float start_proc = start + time_offset_ * 2.0;
     for (size_t i = 0; i < time_list_.size(); i++) {
       float time = time_list_[i];
+      if (time > next_time) {
+        std::cout << "Proc at " << next_time << "[s]" << std::endl;
+        next_time += indicate_time_step;
+      }
+      if (time < start) {
+        continue;
+      }
+
       float acc_x = acc_list_[i][0];
       float acc_y = acc_list_[i][1];
       float acc_z = acc_list_[i][2];
@@ -80,9 +89,10 @@ class SampleDataReader {
           sqrt(acc_x * acc_x + acc_y * acc_y + acc_z * acc_z);
       conv_->AddValue(time, abs_acc);
 
+      input_time_list_.push_back(time);
       input_list_.push_back(abs_acc);
 
-      if (time > time_offset_ * 2.0) {
+      if (time > start_proc) {
         std::vector<float> result;
         conv_->Convert(result);
         result_time_list_.push_back(time - time_offset_);
@@ -91,11 +101,6 @@ class SampleDataReader {
 
       if (time > end) {
         break;
-      }
-
-      if (time > next_time) {
-        std::cout << "Proc at " << next_time << "[s]" << std::endl;
-        next_time += indicate_time_step;
       }
     }
     std::cout << "Proc finish" << std::endl;
@@ -123,7 +128,7 @@ class SampleDataReader {
   void WriteInput(std::string& filename) {
     std::ofstream resultfile(filename.c_str());
     for (size_t i = 0; i < input_list_.size(); i++) {
-      resultfile << time_list_[i] << " "
+      resultfile << input_time_list_[i] << " "
                  << input_list_[i] << std::endl;
     }
   }
@@ -152,6 +157,7 @@ class SampleDataReader {
   std::vector<std::vector<float> > gyro_list_;
   float time_offset_;
 
+  std::vector<float> input_time_list_;
   std::vector<float> input_list_;
 
   std::vector<float> result_time_list_;
@@ -160,18 +166,30 @@ class SampleDataReader {
 
 int main(int argc, char** argv) {
   std::string filename;
+  float start = 0.0;
+  float end = -1.0;
   if (argc < 2) {
-    std::cerr << "usage: sample_walking <data file>" << std::endl;
+    std::cerr
+        << "usage: sample_walking <data file> [start time] [end time]"
+        << std::endl;
     return 1;
-  } else {
-    filename = std::string(argv[1]);
+  } else if (argc >= 4) {
+    try {
+      start = boost::lexical_cast<float>(std::string(argv[2]));
+      end = boost::lexical_cast<float>(std::string(argv[3]));
+    } catch (boost::bad_lexical_cast& ex) {
+      std::cerr << "invalid start or end time." << std::endl;
+      return 1;
+    }
   }
+  filename = std::string(argv[1]);
+
   SampleDataReader sample;
   if (!sample.ReadData(filename)) {
     std::cerr << "invalid or missing data file: " << filename << std::endl;
     return 1;
   }
-  sample.Proc(0.0, 60.0);
+  sample.Proc(start, end);
 
   std::string resultfile("result_walking.dat");
   sample.WriteResult(resultfile);
