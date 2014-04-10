@@ -2,7 +2,10 @@ language:
   - cpp
 compiler:
   - gcc
-script: "cmake ./ && make"
+install:
+  - sudo apt-get -qq install libboost1.48-all-dev
+script:
+  - cmake ./ && make
   - bin/test_gabor_filter
   - bin/test_wavelet_converter
 notifications:
