@@ -3,6 +3,7 @@ language:
 compiler:
   - gcc
 script:
+  - cmake ./ && make
   - bin/test_gabor_filter
   - bin/test_wavelet_converter
 notifications:
